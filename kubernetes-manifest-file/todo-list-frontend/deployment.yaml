@@ -50,7 +50,6 @@ spec:
             cpu: "500m"
       restartPolicy: Always
 
-
 ---
 apiVersion: v1
 kind: Service
