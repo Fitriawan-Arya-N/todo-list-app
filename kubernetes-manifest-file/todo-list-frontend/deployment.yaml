@@ -41,7 +41,16 @@ spec:
             port: 80
           initialDelaySeconds: 15
           periodSeconds: 20
+        resources: # Tambahkan batasan sumber daya
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
       restartPolicy: Always
+
+
 ---
 apiVersion: v1
 kind: Service
