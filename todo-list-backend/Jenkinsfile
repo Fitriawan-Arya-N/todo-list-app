@@ -1,0 +1,149 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'nodejs'
+        sonarQube 'sonarqube-scanner' // Define SonarQube scanner tool
+    }
+
+    environment {
+        PROJECT_ID = credentials('PROJECT-ID')
+        GCP_GAR_REPO_FE_NAME = credentials('GAR-REPO-FE')
+        GCP_REGION = 'asia-southeast1'
+        REPO_URL = "${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}"
+        GITHUB_USERNAME = 'github-username'
+        GITHUB_EMAIL = 'github-email'
+        GITHUB_REPO_NAME = 'github-repo-name'
+        GITHUB_CRED = 'github-webhook'
+    }
+
+    stages {
+        stage('Cleaning Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', 
+                    credentialsId: 'github-webhook', 
+                    url: 'https://github.com/Fitriawan-Arya-N/todo-list-app.git'
+            }
+        }
+
+        stage('SonarQube: Code Analysis') {
+            steps {
+                dir('todo-list-frontend') {
+                    withSonarQubeEnv('sonarqube-scanner') {
+                        sh '''
+                            sonar-scanner \
+                            -Dsonar.projectName=todo-list-frontend \
+                            -Dsonar.projectKey=todo-list-frontend
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Check') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, 
+                        credentialsId: 'sonar-token'
+                }
+            }
+        }
+
+        stage('OWASP Dependency-Check Scan') {
+            steps {
+                dir('todo-list-frontend') {
+                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', 
+                        odcInstallation: 'dependency-check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
+        }
+
+        stage('Trivy File Scan') {
+            steps {
+                dir('todo-list-frontend') {
+                    script {
+                        def resultFs = sh(script: '''
+                            trivy fs . --exit-code 1 --severity HIGH,CRITICAL > trivyfs.txt
+                        ''', returnStatus: true)
+
+                        if (resultFs != 0) {
+                            unstable("Critical vulnerabilities found in file scan. Check trivyfs.txt.")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Docker Image Build') {
+            steps {
+                dir('todo-list-frontend') {
+                    script {
+                        sh '''
+                            docker rmi -f ${REPO_URL}:${BUILD_NUMBER} || true
+                            docker build -t ${REPO_URL}:${BUILD_NUMBER} .
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Trivy Image Scan') {
+            steps {
+                script {
+                    def resultIs = sh(script: '''
+                        trivy image ${REPO_URL}:${BUILD_NUMBER} --exit-code 1 --severity HIGH,CRITICAL > trivyimage.txt
+                    ''', returnStatus: true)
+
+                    if (resultIs != 0) {
+                        unstable("Critical vulnerabilities found in image scan. Check trivyimage.txt.")
+                    }
+                }
+            }
+        }
+
+        stage('Push Image to GAR') {
+            steps {
+                script {
+                    sh '''
+                        gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev
+                        docker tag ${REPO_URL}:${BUILD_NUMBER} ${REPO_URL}:${BUILD_NUMBER}
+                        docker push ${REPO_URL}:${BUILD_NUMBER}
+                    '''
+                }
+            }
+        }
+
+        stage('Update Deployment File') {
+            environment {
+                GIT_REPO_NAME = 'three-tier-application'
+                GIT_USER_NAME = '${GITHUB_USERNAME}'
+            }
+            steps {
+                dir('Kubernetes-Manifests-file/Backend') {
+                    withCredentials([string(credentialsId: 'github-credentials-id-text', variable: 'GITHUB_TOKEN')]) {
+                        script {
+                            sh '''
+                                git config user.email "${GITHUB_EMAIL}"
+                                git config user.name "${GITHUB_USERNAME}"
+
+                                imageTag=$(grep -oP '(?<=todo-list-frontend:)[^ ]+' deployment.yaml)
+                                sed -i "s/${imageTag}/${BUILD_NUMBER}/" deployment.yaml
+
+                                git add deployment.yaml
+                                git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                                git push https://${GITHUB_CRED}@github.com/${GITHUB_USERNAME}/${GITHUB_REPO_NAME}.git HEAD:main
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

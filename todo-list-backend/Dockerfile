@@ -1,5 +1,5 @@
 # Gunakan node.js resmi sebagai base image
-FROM node:22
+FROM node:22 AS build
 
 # Set working directory di dalam container
 WORKDIR /usr/src/app

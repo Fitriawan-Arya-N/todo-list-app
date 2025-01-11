@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-frontend
+  namespace: todo-list-app
+  labels:
+    role: todo-list-frontend
+    env: production
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      role: todo-list-frontend
+  template:
+    metadata:
+      labels:
+        role: todo-list-frontend
+    spec:
+      containers:
+      - name: todo-list-frontend
+        image: asia-southeast1-docker.pkg.dev/PROJECT-ID/GAR-REPO-FE/todo-list-frontend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: NODE_ENV
+          value: "production"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-list-frontend-service
+  namespace: todo-list-app
+  labels:
+    role: todo-list-frontend
+spec:
+  selector:
+    role: todo-list-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
