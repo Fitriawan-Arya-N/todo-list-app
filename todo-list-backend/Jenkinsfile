@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    triggers {
+        githubPush() // Trigger untuk webhook GitHub
+    }
 
     tools {
         nodejs 'nodejs'
@@ -35,11 +38,13 @@ pipeline {
         stage('SonarQube: Code Analysis') {
             steps {
                 dir('todo-list-frontend') {
-                    withSonarQubeEnv('sonarqube-scanner') {
+                    withSonarQubeEnv('sonar-server') {
                         sh '''
-                            sonar-scanner \
                             -Dsonar.projectName=todo-list-frontend \
-                            -Dsonar.projectKey=todo-list-frontend
+                            -Dsonar.projectKey=todo-list-frontend \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://35.240.137.19:9000/ \
+                            -Dsonar.login=sonar-token
                         '''
                     }
                 }
@@ -49,8 +54,7 @@ pipeline {
         stage('Quality Check') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, 
-                        credentialsId: 'sonar-token'
+                    waitForQualityGate abortPipeline: false
                 }
             }
         }
