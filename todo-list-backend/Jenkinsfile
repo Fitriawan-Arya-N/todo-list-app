@@ -16,7 +16,7 @@ pipeline {
         GITHUB_REPO_NAME = credentials('github-repo-name')
         GITHUB_CRED = credentials('github-webhook')
         SONAR_AUTH_TOKEN = credentials('sonar-token')
-        IMAGE_NAME = 'frontend'
+        IMAGE_NAME = 'todo-list-frontend'
     }
 
     stages {
