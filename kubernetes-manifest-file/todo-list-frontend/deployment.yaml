@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: todo-list-frontend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:16
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:36
         ports:
         - containerPort: 3000
         env:
