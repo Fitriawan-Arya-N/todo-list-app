@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-mysql
+  namespace: todo-list-app
+  labels:
+    role: todo-list-mysql
+    env: production
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      role: todo-list-mysql
+  template:
+    metadata:
+      labels:
+        role: todo-list-mysql
+    spec:
+      containers:
+      - name: todo-list-mysql
+        image: mysql:8.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todo-list-mysql-secrets  # Nama secret yang sudah dibuat
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          value: "todo_list_db"
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: todo-list-mysql-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todo-list-mysql-secrets
+              key: MYSQL_PASSWORD
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256mi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-list-mysql-service
+  namespace: todo-list-app
+  labels:
+    role: todo-list-mysql
+spec:
+  selector:
+    role: todo-list-mysql
+  ports:
+  - protocol: TCP
+    port: 3306       # Port default untuk MySQL
+    targetPort: 3306  # Port yang digunakan oleh container MySQL
+  type: ClusterIP      # Akses hanya dalam clusterapiVersion: v1

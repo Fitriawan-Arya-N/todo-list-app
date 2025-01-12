@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-backend
+  namespace: todo-list-app
+  labels:
+    role: todo-list-backend
+    env: production
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      role: todo-list-backend
+  template:
+    metadata:
+      labels:
+        role: todo-list-backend
+    spec:
+      containers:
+      - name: todo-list-backend
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:16
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MYSQL_HOST
+          value: "todo-list-mysql-service"  # Nama service MySQL
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: todo-list-mysql-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todo-list-mysql-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
+          value: "todo_list_db"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 24
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-list-backend-service
+  namespace: todo-list-app
+  labels:
+    role: todo-list-backend
+spec:
+  selector:
+    role: todo-list-backend
+  ports:
+  - protocol: TCP
+    port: 5000       # Port service yang digunakan untuk akses
+    targetPort: 5000  # Port container backend Anda
+  type: ClusterIP 

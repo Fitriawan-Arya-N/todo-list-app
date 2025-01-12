@@ -8,15 +8,15 @@ pipeline {
     environment {
         SCANNER_HOME=tool 'sonar-scanner'
         PROJECT_ID = credentials('PROJECT-ID')
-        GCP_GAR_REPO_BE_NAME = credentials('GAR-REPO-BE')
+        GCP_GAR_REPO_FE_NAME = credentials('GAR-REPO-FE')
         GCP_REGION = 'asia-southeast1'
-        REPO_URL = """${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_BE_NAME}"""
+        REPO_URL = """${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}"""
         GITHUB_USERNAME = credentials('github-username')
         GITHUB_EMAIL = credentials('github-email')
         GITHUB_REPO_NAME = credentials('github-repo-name')
         GITHUB_CRED = credentials('github-webhook')
         SONAR_AUTH_TOKEN = credentials('sonar-token')
-        IMAGE_NAME = 'todo-list-backend'
+        IMAGE_NAME = 'todo-list-frontend'
     }
 
     stages {
@@ -36,12 +36,12 @@ pipeline {
 
         stage('SonarQube: Code Analysis') {
             steps {
-                dir('todo-list-backend') {
+                dir('todo-list-frontend') {
                     withSonarQubeEnv('sonar-server') {
                         sh '''
                             $SCANNER_HOME/bin/sonar-scanner \
-                            -Dsonar.projectName=todo-list-backend \
-                            -Dsonar.projectKey=todo-list-backend \
+                            -Dsonar.projectName=todo-list-frontend \
+                            -Dsonar.projectKey=todo-list-frontend \
                             -Dsonar.host.url=http://35.240.137.19:9000/ \
                             -Dsonar.login=${SONAR_AUTH_TOKEN}
                         '''
@@ -60,7 +60,7 @@ pipeline {
 
         stage('Trivy File Scan') {
             steps {
-                dir('todo-list-backend') {
+                dir('todo-list-frontend') {
                     sh 'trivy fs . > trivyfs.txt'
                 }
             }
@@ -68,11 +68,11 @@ pipeline {
 
         stage('Docker Image Build') {
             steps {
-                dir('todo-list-backend') {
+                dir('todo-list-frontend') {
                     script {
                         sh '''
-                            docker rmi -f ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_BE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} || true
-                            docker build -t ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_BE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} .
+                            docker rmi -f ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} || true
+                            docker build -t ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} .
                         '''
                     }
                 }
@@ -92,8 +92,8 @@ pipeline {
                 script {
                     sh '''
                         gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev
-                        docker tag ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_BE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_BE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER}
-                        docker push ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_BE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker tag ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker push ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER}
                     '''
                 }
             }
@@ -101,14 +101,14 @@ pipeline {
 
         stage('Update Deployment File') {
             steps {
-                dir('kubernetes-manifest-file/todo-list-backend') {
+                dir('kubernetes-manifest-file/todo-list-frontend') {
                     withCredentials([string(credentialsId: 'github-webhook-token', variable: 'GITHUB_TOKEN')]) {
                         script {
                             sh '''
                                 git config user.email "${GITHUB_EMAIL}"
                                 git config user.name "${GITHUB_USERNAME}"
 
-                                imageTag=$(grep -oP '(?<=todo-list-backend:)[^ ]+' deployment.yaml)
+                                imageTag=$(grep -oP '(?<=todo-list-frontend:)[^ ]+' deployment.yaml)
                                 sed -i "s/${imageTag}/${BUILD_NUMBER}/" deployment.yaml
 
                                 git add deployment.yaml
