@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: todo-list-frontend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:30
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:31
         ports:
         - containerPort: 80
         env:
@@ -43,7 +43,7 @@ spec:
           periodSeconds: 24
         resources: # Tambahkan batasan sumber daya
           requests:
-            memory: "130Mi"
+            memory: "131Mi"
             cpu: "250m"
           limits:
             memory: "256Mi"
