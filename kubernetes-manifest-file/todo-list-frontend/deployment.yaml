@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: todo-list-frontend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:38
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:39
         ports:
         - containerPort: 3000
         env:
@@ -45,7 +45,7 @@ spec:
           periodSeconds: 24
         resources:
           requests:
-            memory: "138Mi"
+            memory: "139Mi"
             cpu: "250m"
           limits:
             memory: "256Mi"
