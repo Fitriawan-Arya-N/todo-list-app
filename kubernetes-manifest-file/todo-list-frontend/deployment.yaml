@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: todo-list-frontend
-        image: asia-southeast1-docker.pkg.dev/PROJECT-ID/GAR-REPO-FE/todo-list-frontend:21
+        image: asia-southeast1-docker.pkg.dev/PROJECT-ID/GAR-REPO-FE/todo-list-frontend:22
         ports:
         - containerPort: 80
         env:
@@ -40,7 +40,7 @@ spec:
             path: /health
             port: 80
           initialDelaySeconds: 15
-          periodSeconds: 21
+          periodSeconds: 22
         resources: # Tambahkan batasan sumber daya
           requests:
             memory: "128Mi"
