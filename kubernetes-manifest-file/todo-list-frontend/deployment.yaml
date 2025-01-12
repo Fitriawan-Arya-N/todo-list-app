@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: todo-list-frontend
-        image: asia-southeast1-docker.pkg.dev/PROJECT-ID/GAR-REPO-FE/todo-list-frontend:latest
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/frontend:latest
         ports:
         - containerPort: 80
         env:

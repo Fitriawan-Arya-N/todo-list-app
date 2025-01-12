@@ -1,23 +1,22 @@
 pipeline {
     agent any
-    triggers {
-        githubPush() // Trigger untuk webhook GitHub
-    }
-
     tools {
         nodejs 'nodejs'
-        sonarQube 'sonarqube-scanner' // Define SonarQube scanner tool
+        jdk 'jdk'
     }
 
     environment {
+        SCANNER_HOME=tool 'sonar-scanner'
         PROJECT_ID = credentials('PROJECT-ID')
         GCP_GAR_REPO_FE_NAME = credentials('GAR-REPO-FE')
         GCP_REGION = 'asia-southeast1'
-        REPO_URL = "${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}"
-        GITHUB_USERNAME = 'github-username'
-        GITHUB_EMAIL = 'github-email'
-        GITHUB_REPO_NAME = 'github-repo-name'
-        GITHUB_CRED = 'github-webhook'
+        REPO_URL = """${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}"""
+        GITHUB_USERNAME = credentials('github-username')
+        GITHUB_EMAIL = credentials('github-email')
+        GITHUB_REPO_NAME = credentials('github-repo-name')
+        GITHUB_CRED = credentials('github-webhook')
+        SONAR_AUTH_TOKEN = credentials('sonar-token')
+        IMAGE_NAME = 'frontend'
     }
 
     stages {
@@ -40,11 +39,11 @@ pipeline {
                 dir('todo-list-frontend') {
                     withSonarQubeEnv('sonar-server') {
                         sh '''
+                            $SCANNER_HOME/bin/sonar-scanner \
                             -Dsonar.projectName=todo-list-frontend \
                             -Dsonar.projectKey=todo-list-frontend \
-                            -Dsonar.sources=. \
                             -Dsonar.host.url=http://35.240.137.19:9000/ \
-                            -Dsonar.login=sonar-token
+                            -Dsonar.login=${SONAR_AUTH_TOKEN}
                         '''
                     }
                 }
@@ -90,8 +89,8 @@ pipeline {
                 dir('todo-list-frontend') {
                     script {
                         sh '''
-                            docker rmi -f ${REPO_URL}:${BUILD_NUMBER} || true
-                            docker build -t ${REPO_URL}:${BUILD_NUMBER} .
+                            docker rmi -f ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} || true
+                            docker build -t ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} .
                         '''
                     }
                 }
@@ -102,7 +101,7 @@ pipeline {
             steps {
                 script {
                     def resultIs = sh(script: '''
-                        trivy image ${REPO_URL}:${BUILD_NUMBER} --exit-code 1 --severity HIGH,CRITICAL > trivyimage.txt
+                        trivy image ${REPO_URL}/${IMAGE_NAME}:${BUILD_NUMBER} --exit-code 1 --severity HIGH,CRITICAL > trivyimage.txt
                     ''', returnStatus: true)
 
                     if (resultIs != 0) {
@@ -117,21 +116,17 @@ pipeline {
                 script {
                     sh '''
                         gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev
-                        docker tag ${REPO_URL}:${BUILD_NUMBER} ${REPO_URL}:${BUILD_NUMBER}
-                        docker push ${REPO_URL}:${BUILD_NUMBER}
+                        docker tag ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER} ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker push ${GCP_REGION}-docker.pkg.dev/${PROJECT_ID}/${GCP_GAR_REPO_FE_NAME}/${IMAGE_NAME}:${BUILD_NUMBER}
                     '''
                 }
             }
         }
 
         stage('Update Deployment File') {
-            environment {
-                GIT_REPO_NAME = 'three-tier-application'
-                GIT_USER_NAME = '${GITHUB_USERNAME}'
-            }
             steps {
-                dir('Kubernetes-Manifests-file/Backend') {
-                    withCredentials([string(credentialsId: 'github-credentials-id-text', variable: 'GITHUB_TOKEN')]) {
+                dir('kubernetes-manifest-file/todo-list-frontend') {
+                    withCredentials([string(credentialsId: 'github-webhook-token', variable: 'GITHUB_TOKEN')]) {
                         script {
                             sh '''
                                 git config user.email "${GITHUB_EMAIL}"
