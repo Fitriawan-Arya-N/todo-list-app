@@ -7,7 +7,7 @@ metadata:
     role: todo-list-mysql
     env: production
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
   selector:
