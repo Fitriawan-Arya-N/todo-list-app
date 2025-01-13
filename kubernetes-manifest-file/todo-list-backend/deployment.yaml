@@ -1,4 +1,4 @@
-apiVersion: apps/v2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: todo-list-backend
@@ -62,7 +62,7 @@ spec:
       restartPolicy: Always
 
 ---
-apiVersion: v2
+apiVersion: v1
 kind: Service
 metadata:
   name: todo-list-backend-service
@@ -76,4 +76,4 @@ spec:
   - protocol: TCP
     port: 5000       # Port service yang digunakan untuk akses
     targetPort: 5000  # Port container backend Anda
-  type: ClusterIP 
+  type: ClusterIP
