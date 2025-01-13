@@ -22,7 +22,7 @@ spec:
         - name: todo-list-backend-service-account-secret
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:8
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:12
         ports:
         - containerPort: 5000
         env:
