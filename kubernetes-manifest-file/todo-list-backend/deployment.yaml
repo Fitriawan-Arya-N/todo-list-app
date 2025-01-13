@@ -20,14 +20,14 @@ spec:
     spec:
       containers:
       - name: todo-list-backend
-        image: asia-southeast2-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:4
+        image: asia-southeast2-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:5
         ports:
         - containerPort: 5000
         env:
         - name: MYSQL_HOST
           value: "todo-list-mysql-service"  # Nama service MySQL
         - name: MYSQL_PORT
-          value: "4306"
+          value: "5306"
         - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
@@ -51,7 +51,7 @@ spec:
             path: /health
             port: 5000
           initialDelaySeconds: 25
-          periodSeconds: 24
+          periodSeconds: 25
         resources:
           requests:
             memory: "228Mi"
