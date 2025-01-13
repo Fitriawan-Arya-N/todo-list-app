@@ -8,7 +8,7 @@ const AddTodoForm = ({ onAdd }) => {
     e.preventDefault();
     if (newTodo.trim()) {
       axios
-        .post('http://localhost:5000/api/todos', { title: newTodo, completed: false })
+        .post('http://todo-list-backend-service:5000/api/todos', { title: newTodo, completed: false })
         .then(() => {
           onAdd(newTodo);
           setNewTodo('');
