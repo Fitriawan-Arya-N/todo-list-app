@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:12
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:13
         ports:
         - containerPort: 5000
         env:
@@ -57,7 +57,7 @@ spec:
             memory: "256Mi"  # Menyesuaikan agar lebih optimal
             cpu: "300m"
           limits:
-            memory: "512Mi"   # Limit lebih besar untuk beban aplikasi
+            memory: "513Mi"   # Limit lebih besar untuk beban aplikasi
             cpu: "800m"
       imagePullSecrets:
       - name: todo-list-backend-service-account-secret
