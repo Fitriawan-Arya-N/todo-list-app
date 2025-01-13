@@ -43,13 +43,13 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 6000
+            port: 5000
           initialDelaySeconds: 6
           periodSeconds: 10   # Period yang lebih cepat untuk memeriksa status backend
         livenessProbe:
           httpGet:
             path: /health
-            port: 6000
+            port: 5000
           initialDelaySeconds: 20
           periodSeconds: 20
         resources:
@@ -74,6 +74,6 @@ spec:
     role: todo-list-backend
   ports:
   - protocol: TCP
-    port: 6000       # Port service yang digunakan untuk akses
-    targetPort: 6000  # Port container backend Anda
+    port: 5000       # Port service yang digunakan untuk akses
+    targetPort: 5000  # Port container backend Anda
   type: ClusterIP
