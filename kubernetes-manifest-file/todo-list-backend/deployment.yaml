@@ -20,14 +20,14 @@ spec:
     spec:
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:4
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:5
         ports:
         - containerPort: 5000
         env:
         - name: MYSQL_HOST
           value: "todo-list-mysql-service"  # Nama service MySQL
         - name: MYSQL_PORT
-          value: "4306"
+          value: "3306"
         - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
@@ -45,20 +45,20 @@ spec:
             path: /health
             port: 5000
           initialDelaySeconds: 5
-          periodSeconds: 20
+          periodSeconds: 10   # Period yang lebih cepat untuk memeriksa status backend
         livenessProbe:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 25
-          periodSeconds: 24
+          initialDelaySeconds: 20
+          periodSeconds: 20
         resources:
           requests:
-            memory: "228Mi"
-            cpu: "250m"
+            memory: "256Mi"  # Menyesuaikan agar lebih optimal
+            cpu: "300m"
           limits:
-            memory: "256Mi"
-            cpu: "500m"
+            memory: "512Mi"   # Limit lebih besar untuk beban aplikasi
+            cpu: "600m"
       restartPolicy: Always
 
 ---
