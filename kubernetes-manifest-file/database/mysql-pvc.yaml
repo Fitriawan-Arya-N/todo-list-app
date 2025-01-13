@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: standard  # Pastikan ini sesuai dengan StorageClass yang ada
+  storageClassName: standard-zonal  # Sesuaikan dengan StorageClass yang Anda buat
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi
