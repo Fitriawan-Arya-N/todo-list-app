@@ -18,8 +18,6 @@ spec:
       labels:
         role: todo-list-backend
     spec:
-      imagePullSecrets:         
-        - name: todo-list-backend-service-account-secret
       containers:
       - name: todo-list-backend
         image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:12
@@ -61,6 +59,8 @@ spec:
           limits:
             memory: "512Mi"   # Limit lebih besar untuk beban aplikasi
             cpu: "800m"
+      imagePullSecrets:
+      - name: todo-list-backend-service-account-secret
       restartPolicy: Always
 
 ---
@@ -77,5 +77,5 @@ spec:
   ports:
   - protocol: TCP
     port: 5000       # Port service yang digunakan untuk akses
-    targetPort: 5000  # Port container backend Anda
+    targetPort: 5000  
   type: ClusterIP
