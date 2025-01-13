@@ -20,9 +20,9 @@ spec:
     spec:
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:5
+        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:6
         ports:
-        - containerPort: 5000
+        - containerPort: 6000
         env:
         - name: MYSQL_HOST
           value: "todo-list-mysql-service"  # Nama service MySQL
@@ -43,21 +43,21 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 5000
-          initialDelaySeconds: 5
+            port: 6000
+          initialDelaySeconds: 6
           periodSeconds: 10   # Period yang lebih cepat untuk memeriksa status backend
         livenessProbe:
           httpGet:
             path: /health
-            port: 5000
+            port: 6000
           initialDelaySeconds: 20
           periodSeconds: 20
         resources:
           requests:
-            memory: "256Mi"  # Menyesuaikan agar lebih optimal
+            memory: "266Mi"  # Menyesuaikan agar lebih optimal
             cpu: "300m"
           limits:
-            memory: "512Mi"   # Limit lebih besar untuk beban aplikasi
+            memory: "612Mi"   # Limit lebih besar untuk beban aplikasi
             cpu: "600m"
       restartPolicy: Always
 
@@ -74,6 +74,6 @@ spec:
     role: todo-list-backend
   ports:
   - protocol: TCP
-    port: 5000       # Port service yang digunakan untuk akses
-    targetPort: 5000  # Port container backend Anda
+    port: 6000       # Port service yang digunakan untuk akses
+    targetPort: 6000  # Port container backend Anda
   type: ClusterIP
