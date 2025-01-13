@@ -120,13 +120,13 @@ pipeline {
                             sh '''
                                 git config user.email "${GITHUB_EMAIL}"
                                 git config user.name "${GITHUB_USERNAME}"
-
+        
                                 # Mendapatkan tag image yang sedang digunakan
                                 imageTag=$(grep -oP '(?<=todo-list-backend:)[^ ]+' deployment.yaml)
                                 
                                 # Mengganti tag image yang lama dengan tag build yang baru (BUILD_NUMBER)
                                 sed -i "s/${imageTag}/todo-list-backend:${BUILD_NUMBER}/" deployment.yaml
-
+        
                                 # Menambahkan perubahan ke git, commit, dan push ke repo
                                 git add deployment.yaml
                                 git commit -m "Update deployment image to version ${BUILD_NUMBER}"

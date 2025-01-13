@@ -18,6 +18,8 @@ spec:
       labels:
         role: todo-list-backend
     spec:
+      imagePullSecrets:           # Tambahkan bagian ini
+        - name: todo-list-backend-image-pull-secret
       containers:
       - name: todo-list-backend
         image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:6
