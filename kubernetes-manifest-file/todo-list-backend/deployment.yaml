@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: apps/v2
 kind: Deployment
 metadata:
   name: todo-list-backend
@@ -7,7 +7,7 @@ metadata:
     role: todo-list-backend
     env: production
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
   selector:
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:1
+        image: asia-southeast2-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:1
         ports:
         - containerPort: 5000
         env:
@@ -45,16 +45,16 @@ spec:
             path: /health
             port: 5000
           initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: 20
         livenessProbe:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 15
+          initialDelaySeconds: 25
           periodSeconds: 24
         resources:
           requests:
-            memory: "128Mi"
+            memory: "228Mi"
             cpu: "250m"
           limits:
             memory: "256Mi"
@@ -62,7 +62,7 @@ spec:
       restartPolicy: Always
 
 ---
-apiVersion: v1
+apiVersion: v2
 kind: Service
 metadata:
   name: todo-list-backend-service
