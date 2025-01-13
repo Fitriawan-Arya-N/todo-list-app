@@ -42,7 +42,7 @@ pipeline {
                             $SCANNER_HOME/bin/sonar-scanner \
                             -Dsonar.projectName=todo-list-backend \
                             -Dsonar.projectKey=todo-list-backend \
-                            -Dsonar.host.url=http://35.240.137.19:9000/ \
+                            -Dsonar.host.url=http://34.143.200.248:9000/ \
                             -Dsonar.login=${SONAR_AUTH_TOKEN}
                         '''
                     }
@@ -65,7 +65,20 @@ pipeline {
                 }
             }
         }
-
+        stage('Authenticate with GCP') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    script {
+                        sh '''#!/bin/bash
+                        gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
+                        gcloud config set project "${PROJECT_ID}"
+                        gcloud config set compute/region "${GCP_REGION}"
+                        gcloud config set compute/zone "${GCP_REGION}-a"
+                        '''
+                    }
+                }
+            }
+        }
         stage('Docker Image Build') {
             steps {
                 dir('todo-list-backend') {

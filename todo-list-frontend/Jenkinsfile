@@ -42,7 +42,7 @@ pipeline {
                             $SCANNER_HOME/bin/sonar-scanner \
                             -Dsonar.projectName=todo-list-frontend \
                             -Dsonar.projectKey=todo-list-frontend \
-                            -Dsonar.host.url=http://35.240.137.19:9000/ \
+                            -Dsonar.host.url=http://34.143.200.248:9000/ \
                             -Dsonar.login=${SONAR_AUTH_TOKEN}
                         '''
                     }
