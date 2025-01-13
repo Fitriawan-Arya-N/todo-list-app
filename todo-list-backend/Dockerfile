@@ -14,4 +14,4 @@ RUN npm install
 COPY . .
 
 # Jalankan aplikasi Express
-CMD ["node", "index.js"]
+CMD ["npx", "sequelize-cli", "db:migrate", "&&", "node", "server.js"]
