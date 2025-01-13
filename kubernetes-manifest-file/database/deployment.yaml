@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: todo-list-mysql
-        image: mysql:5.7
+        image: mysql:8.0.32
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -44,6 +44,13 @@ spec:
         volumeMounts:
         - name: mysql-data
           mountPath: /var/lib/mysql
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
@@ -58,10 +65,10 @@ metadata:
   labels:
     role: todo-list-mysql
 spec:
+  type: ClusterIP
   selector:
     role: todo-list-mysql
   ports:
   - protocol: TCP
     port: 3306
     targetPort: 3306
-  type: ClusterIP
