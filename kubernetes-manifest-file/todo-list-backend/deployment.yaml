@@ -28,7 +28,7 @@ spec:
         - containerPort: 5000
         env:
         - name: MYSQL_HOST
-          value: "todo-list-mysql-service.todo-list-app.svc.cluster.local"  # Fully qualified domain name for service
+          value: "todo-list-mysql-service.todo-list-app.svc.cluster.local"
         - name: MYSQL_PORT
           value: "3306"
         - name: MYSQL_USER
@@ -47,14 +47,18 @@ spec:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 10  # Slightly longer delay to ensure backend initializes
-          periodSeconds: 10
+          initialDelaySeconds: 20   # Menambah waktu delay sedikit
+          periodSeconds: 5          # Interval pengecekan lebih cepat
+          timeoutSeconds: 5         # Tambahkan timeout jika perlu
+          failureThreshold: 3       # Toleransi kegagalan lebih besar
         livenessProbe:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 20
-          periodSeconds: 20
+          initialDelaySeconds: 30   # Memastikan aplikasi memiliki waktu lebih lama untuk start
+          periodSeconds: 10         # Interval pengecekan lebih cepat
+          timeoutSeconds: 5         # Timeout
+          failureThreshold: 3       # Toleransi kegagalan lebih besar
         resources:
           requests:
             memory: "512Mi"
