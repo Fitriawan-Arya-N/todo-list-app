@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": "12345",
-    "database": "todo_db",
-    "host": "mysql",
+    "username": "mysql_username",
+    "password": "mysql_password",
+    "database": "todo_list_db",
+    "host": "todo-list-mysql-service",
     "dialect": "mysql"
   },
   "test": {
@@ -21,3 +21,7 @@
     "dialect": "mysql"
   }
 }
+
+MYSQL_ROOT_PASSWORD: bXlzcWxfcm9vdF9wYXNz
+MYSQL_USER: bXlzcWxfdXNlcm5hbWU=
+MYSQL_PASSWORD: bXlzcWxfcGFzc3dvcmQ=
