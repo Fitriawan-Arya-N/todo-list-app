@@ -1,15 +1,19 @@
 const mysql = require('mysql2');
 
+// Menggunakan environment variables untuk koneksi database
 const db = mysql.createConnection({
-    host: 'todo-list-mysql-service',  // Nama service MySQL di Kubernetes
-    user: process.env.DB_USER,        // Gunakan user dari environment variable
-    password: process.env.DB_PASSWORD, // Gunakan password dari environment variable
-    database: process.env.DB_NAME     // Nama database dari environment variable
+  host: process.env.MYSQL_HOST,  // 'todo-list-mysql-service'
+  user: process.env.MYSQL_USER,  // 'mysql_username' dari Secret
+  password: process.env.MYSQL_PASSWORD,  // 'mysql_password' dari Secret
+  database: process.env.MYSQL_DATABASE  // 'todo_list_db'
 });
 
 db.connect((err) => {
-    if (err) throw err;
-    console.log('Database connected');
+  if (err) {
+    console.error('Database connection error:', err.stack);
+    return;
+  }
+  console.log('Connected to the database.');
 });
 
 module.exports = db;
