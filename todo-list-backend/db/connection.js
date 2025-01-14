@@ -1,19 +1,12 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
-// Menggunakan environment variables untuk koneksi database
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST,  // 'todo-list-mysql-service'
-  user: process.env.MYSQL_USER,  // 'mysql_username' dari Secret
-  password: process.env.MYSQL_PASSWORD,  // 'mysql_password' dari Secret
-  database: process.env.MYSQL_DATABASE  // 'todo_list_db'
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection error:', err.stack);
-    return;
-  }
-  console.log('Connected to the database.');
-});
-
-module.exports = db;
+module.exports = pool;
