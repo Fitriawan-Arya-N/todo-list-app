@@ -22,7 +22,7 @@ spec:
       - name: my-registry-secret
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-terraform-kubernetes/backend/todo-list-backend:14
+        image: asia-southeast1-docker.pkg.dev/belajar-terraform-kubernetes/backend/todo-list-backend:15
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
