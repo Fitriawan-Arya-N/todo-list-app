@@ -21,6 +21,8 @@ spec:
       labels:
         role: todo-list-frontend
     spec:
+      imagePullSecrets:
+      - name: todo-list-frontend-image-pull-secret
       containers:
       - name: todo-list-frontend
         image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/frontend/todo-list-frontend:18

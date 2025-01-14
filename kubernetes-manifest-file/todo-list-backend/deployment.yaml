@@ -18,9 +18,12 @@ spec:
       labels:
         role: todo-list-backend
     spec:
+      imagePullSecrets:
+      - name: todo-list-backend-image-pull-secret
       containers:
       - name: todo-list-backend
         image: asia-southeast1-docker.pkg.dev/belajar-kubernetes-terraform/backend/todo-list-backend:13
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
@@ -59,8 +62,6 @@ spec:
           limits:
             memory: "513Mi"   # Limit lebih besar untuk beban aplikasi
             cpu: "800m"
-      imagePullSecrets:
-      - name: todo-list-backend-service-account-secret
       restartPolicy: Always
 
 ---
