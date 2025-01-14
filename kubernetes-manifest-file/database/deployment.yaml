@@ -44,6 +44,8 @@ spec:
         volumeMounts:
         - name: mysql-data
           mountPath: /var/lib/mysql
+        - name: mysql-init-scripts
+          mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
             memory: "512Mi"
@@ -55,6 +57,9 @@ spec:
       - name: mysql-data
         persistentVolumeClaim:
           claimName: mysql-pvc
+      - name: mysql-init-scripts
+        configMap:
+          name: todo-list-mysql-init
 
 ---
 apiVersion: v1
