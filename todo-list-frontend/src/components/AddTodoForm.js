@@ -8,7 +8,7 @@ const AddTodoForm = ({ onAdd }) => {
     e.preventDefault();
     if (newTodo.trim()) {
       axios
-        .post('http://34.135.238.204:5000/api/todos', { title: newTodo, completed: false })
+        .post('http://34.134.252.1:5000/api/todos', { title: newTodo, completed: false })
         .then((response) => {
           const createdTodo = response.data; // Assuming the backend returns the created todo object
           onAdd(createdTodo); // Pass the full todo object to the parent
