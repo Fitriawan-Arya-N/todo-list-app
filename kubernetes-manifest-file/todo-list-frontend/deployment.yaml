@@ -25,7 +25,7 @@ spec:
       - name: my-registry-secret
       containers:
       - name: todo-list-frontend
-        image: asia-southeast1-docker.pkg.dev/belajar-terraform-kubernetes/frontend/todo-list-frontend:21
+        image: asia-southeast1-docker.pkg.dev/belajar-terraform-kubernetes/frontend/todo-list-frontend:23
         ports:
         - containerPort: 3000
         env:
