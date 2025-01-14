@@ -45,7 +45,7 @@ spec:
           value: "todo_list_db"
         readinessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 5000
           initialDelaySeconds: 20   # Menambah waktu delay sedikit
           periodSeconds: 5          # Interval pengecekan lebih cepat
@@ -53,7 +53,7 @@ spec:
           failureThreshold: 3       # Toleransi kegagalan lebih besar
         livenessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 5000
           initialDelaySeconds: 30   # Memastikan aplikasi memiliki waktu lebih lama untuk start
           periodSeconds: 10         # Interval pengecekan lebih cepat
