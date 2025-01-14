@@ -57,11 +57,11 @@ spec:
           periodSeconds: 20
         resources:
           requests:
-            memory: "256Mi"  # Menyesuaikan agar lebih optimal
-            cpu: "300m"
+            memory: "512Mi"  # Menyesuaikan agar lebih optimal
+            cpu: "500m"
           limits:
-            memory: "513Mi"   # Limit lebih besar untuk beban aplikasi
-            cpu: "800m"
+            memory: "1Gi"   # Limit lebih besar untuk beban aplikasi
+            cpu: "1"
       restartPolicy: Always
 
 ---
