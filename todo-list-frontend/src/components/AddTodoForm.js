@@ -1,3 +1,4 @@
+// AddTodoForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -9,11 +10,12 @@ const AddTodoForm = ({ onAdd }) => {
     if (newTodo.trim()) {
       axios
         .post('http://34.135.238.204:5000/api/todos', { title: newTodo, completed: false })
-        .then(() => {
-          onAdd(newTodo);
+        .then((response) => {
+          const createdTodo = response.data; // Assuming the backend returns the created todo object
+          onAdd(createdTodo); // Pass the full todo object to the parent
           setNewTodo('');
         })
-        .catch((error) => console.error('Error adding todo:', error));
+        .catch((error) => console.error('Error adding todo:', error.response || error.message));
     }
   };
 

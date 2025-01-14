@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TodoList from './components/TodoList';
@@ -14,11 +15,8 @@ const App = () => {
       .catch((error) => console.error('Error fetching todos:', error));
   }, []);
 
-  const addTodo = (newTodoTitle) => {
-    setTodos((prevTodos) => [
-      ...prevTodos,
-      { id: prevTodos.length + 1, title: newTodoTitle, completed: false },
-    ]);
+  const addTodo = (newTodo) => {
+    setTodos((prevTodos) => [...prevTodos, newTodo]);
   };
 
   const deleteTodo = (id) => {
