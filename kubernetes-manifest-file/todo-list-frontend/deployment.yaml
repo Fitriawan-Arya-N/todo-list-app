@@ -32,19 +32,7 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: BACKEND_URL
-          value: "http://todo-list-backend-service:5000"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 18
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 18
-          periodSeconds: 24
+          value: "http://34.135.238.204:5000/api/todos"
         resources:
           requests:
             memory: "256Mi"
@@ -69,4 +57,4 @@ spec:
   - protocol: TCP
     port: 3000
     targetPort: 3000
-  type: LoadBalancer  # Sesuaikan tipe service jika ingin mengakses dari luar cluster
+  type: LoadBalancer  

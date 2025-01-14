@@ -9,7 +9,7 @@ const App = () => {
   useEffect(() => {
     // Fetch todos from the backend
     axios
-      .get('http://todo-list-backend-service:5000/api/todos')
+      .get('http://34.135.238.204:5000/api/todos')
       .then((response) => setTodos(response.data))
       .catch((error) => console.error('Error fetching todos:', error));
   }, []);
@@ -23,7 +23,7 @@ const App = () => {
 
   const deleteTodo = (id) => {
     axios
-      .delete(`http://todo-list-backend-service:5000/api/todos/${id}`)
+      .delete(`http://34.135.238.204:5000/api/todos/${id}`)
       .then(() => {
         setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
       })
