@@ -22,7 +22,7 @@ spec:
       - name: my-registry-secret
       containers:
       - name: todo-list-backend
-        image: asia-southeast1-docker.pkg.dev/belajar-terraform-kubernetes/backend/todo-list-backend:20
+        image: asia-southeast1-docker.pkg.dev/belajar-terraform-kubernetes/backend/todo-list-backend:21
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -47,7 +47,7 @@ spec:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 20   # Menambah waktu delay sedikit
+          initialDelaySeconds: 21   # Menambah waktu delay sedikit
           periodSeconds: 10          # Interval pengecekan lebih cepat
           timeoutSeconds: 10         # Tambahkan timeout jika perlu
           failureThreshold: 3       # Toleransi kegagalan lebih besar
@@ -56,7 +56,7 @@ spec:
             path: /health
             port: 5000
           initialDelaySeconds: 60   # Memastikan aplikasi memiliki waktu lebih lama untuk start
-          periodSeconds: 20         # Interval pengecekan lebih cepat
+          periodSeconds: 21         # Interval pengecekan lebih cepat
           timeoutSeconds: 1         # Timeout
           failureThreshold: 3       # Toleransi kegagalan lebih besar
         resources:
