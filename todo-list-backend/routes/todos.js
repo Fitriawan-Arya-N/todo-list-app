@@ -17,8 +17,12 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     const { title, completed } = req.body;
     try {
-        await db.query('INSERT INTO todos (title, completed) VALUES (?, ?)', [title, completed]);
-        res.status(201).send('Todo added');
+        const [result] = await db.query(
+            'INSERT INTO todos (title, completed) VALUES (?, ?)', 
+            [title, completed]
+        );
+        const newTodo = { id: result.insertId, title, completed }; // Include generated ID
+        res.status(201).json(newTodo); // Return the created todo object
     } catch (err) {
         console.error(err);
         res.status(500).send('Error adding todo');
