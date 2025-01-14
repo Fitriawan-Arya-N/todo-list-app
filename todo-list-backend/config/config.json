@@ -22,6 +22,3 @@
   }
 }
 
-MYSQL_ROOT_PASSWORD: bXlzcWxfcm9vdF9wYXNz
-MYSQL_USER: bXlzcWxfdXNlcm5hbWU=
-MYSQL_PASSWORD: bXlzcWxfcGFzc3dvcmQ=
