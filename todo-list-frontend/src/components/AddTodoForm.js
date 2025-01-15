@@ -13,7 +13,7 @@ const AddTodoForm = ({ onAdd }) => {
     }
 
     try {
-      const response = await axios.post('http://34.134.252.1:5000/api/todos', {
+      const response = await axios.post('http://34.135.238.204:5000/api/todos', {
         title: newTodo,
         completed: false,
       });

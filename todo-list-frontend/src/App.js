@@ -11,7 +11,7 @@ const App = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get('http://34.134.252.1:5000/api/todos');
+        const response = await axios.get('http://34.135.238.204:5000/api/todos');
         setTodos(response.data);
         setLoading(false);
       } catch (err) {
@@ -30,7 +30,7 @@ const App = () => {
 
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`http://34.134.252.1:5000/api/todos/${id}`);
+      await axios.delete(`http://34.135.238.204:5000/api/todos/${id}`);
       setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
     } catch (err) {
       console.error('Error deleting todo:', err.message);
