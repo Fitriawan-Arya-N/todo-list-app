@@ -5,7 +5,7 @@ const todoRoutes = require('./routes/todos');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 // Routes
 app.get('/health', (req, res) => {
