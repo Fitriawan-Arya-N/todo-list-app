@@ -5,33 +5,52 @@ import AddTodoForm from './components/AddTodoForm';
 
 const App = () => {
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Fetch todos from the backend
-    axios
-      .get('http://34.134.252.1:5000/api/todos')
-      .then((response) => setTodos(response.data))
-      .catch((error) => console.error('Error fetching todos:', error));
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get('http://34.134.252.1:5000/api/todos');
+        setTodos(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching todos:', err.message);
+        setError('Failed to load todos. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchTodos();
   }, []);
 
   const addTodo = (newTodo) => {
     setTodos((prevTodos) => [...prevTodos, newTodo]);
   };
 
-  const deleteTodo = (id) => {
-    axios
-      .delete(`http://34.134.252.1:5000/api/todos/${id}`)
-      .then(() => {
-        setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
-      })
-      .catch((error) => console.error('Error deleting todo:', error));
+  const deleteTodo = async (id) => {
+    try {
+      await axios.delete(`http://34.134.252.1:5000/api/todos/${id}`);
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    } catch (err) {
+      console.error('Error deleting todo:', err.message);
+      setError('Failed to delete todo. Please try again.');
+    }
   };
 
   return (
     <div className="container">
       <h1>Todo List</h1>
-      <AddTodoForm onAdd={addTodo} />
-      <TodoList todos={todos} onDelete={deleteTodo} />
+      {loading ? (
+        <p>Loading todos...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : (
+        <>
+          <AddTodoForm onAdd={addTodo} />
+          <TodoList todos={todos} onDelete={deleteTodo} />
+        </>
+      )}
     </div>
   );
 };

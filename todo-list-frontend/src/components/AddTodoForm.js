@@ -3,18 +3,27 @@ import axios from 'axios';
 
 const AddTodoForm = ({ onAdd }) => {
   const [newTodo, setNewTodo] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (newTodo.trim()) {
-      axios
-        .post('http://34.134.252.1:5000/api/todos', { title: newTodo, completed: false })
-        .then((response) => {
-          const createdTodo = response.data; // Assuming the backend returns the created todo object
-          onAdd(createdTodo); // Pass the full todo object to the parent
-          setNewTodo('');
-        })
-        .catch((error) => console.error('Error adding todo:', error.response || error.message));
+    if (!newTodo.trim()) {
+      setError('Todo cannot be empty!');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://34.134.252.1:5000/api/todos', {
+        title: newTodo,
+        completed: false,
+      });
+      const createdTodo = response.data;
+      onAdd(createdTodo);
+      setNewTodo(''); // Reset form
+      setError(''); // Clear error
+    } catch (err) {
+      console.error('Error adding todo:', err.response || err.message);
+      setError('Failed to add todo. Please try again.');
     }
   };
 
@@ -27,6 +36,7 @@ const AddTodoForm = ({ onAdd }) => {
         placeholder="Add a new todo"
       />
       <button type="submit">Add Todo</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };
